@@ -1047,13 +1047,13 @@ object Header {
     final case class Unparsed(authScheme: String, authParameters: String) extends Authorization
 
     def parse(value: String): Either[String, Authorization] = {
-      val parts = value.split(" ")
-      if (parts.length >= 2) {
+      val parts = value.split(" ", 2)
+      if (parts.length == 2) {
         parts(0).toLowerCase match {
           case "basic"  => parseBasic(parts(1))
-          case "digest" => parseDigest(parts.tail.mkString(" "))
+          case "digest" => parseDigest(parts(1))
           case "bearer" => Right(Bearer(parts(1)))
-          case _        => Right(Unparsed(parts(0), parts.tail.mkString(" ")))
+          case _        => Right(Unparsed(parts(0), parts(1)))
         }
       } else Left(s"Invalid Authorization header value: $value")
     }
